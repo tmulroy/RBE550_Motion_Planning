@@ -91,26 +91,45 @@ class Graph:
                         queue.append((node, path + [node]))
 
     # A function used by DFS
-    def DFSUtil(self, v, visited):
+    # def DFSUtil(self, v, visited):
+    #
+    #     # Mark the current node as visited
+    #     # and print it
+    #     visited.add(v)
+    #     print(v, end=' ')
+    #
+    #     # Recur for all the vertices
+    #     # adjacent to this vertex
+    #     for neighbour in self.graph[v]:
+    #         if neighbour not in visited:
+    #             self.DFSUtil(neighbour, visited)
+    #
+    # # The function to do DFS traversal. It uses
+    # # recursive DFSUtil()
+    # def DFS(self, v):
+    #
+    #     # Create a set to store visited vertices
+    #     visited = set()
+    #
+    #     # Call the recursive helper function
+    #     # to print DFS traversal
+    #     self.DFSUtil(v, visited)
 
-        # Mark the current node as visited
-        # and print it
-        visited.add(v)
-        print(v, end=' ')
-
-        # Recur for all the vertices
-        # adjacent to this vertex
-        for neighbour in self.graph[v]:
-            if neighbour not in visited:
-                self.DFSUtil(neighbour, visited)
-
-    # The function to do DFS traversal. It uses
-    # recursive DFSUtil()
-    def DFS(self, v):
-
-        # Create a set to store visited vertices
+    def dfs_paths(self, start, goal):
+        '''
+        Source: https://stackoverflow.com/questions/12864004/tracing-and-returning-a-path-in-depth-first-search
+        Source Author: @XueYu
+        :param start: int
+        :param goal: int
+        :return: list
+        '''
+        stack = [(start, [start])]
         visited = set()
-
-        # Call the recursive helper function
-        # to print DFS traversal
-        self.DFSUtil(v, visited)
+        while stack:
+            (vertex, path) = stack.pop()
+            if vertex not in visited:
+                if vertex == goal:
+                    return path
+                visited.add(vertex)
+                for neighbor in self.graph[vertex]:
+                    stack.append((neighbor, path + [neighbor]))

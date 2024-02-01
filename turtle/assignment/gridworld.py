@@ -4,7 +4,7 @@ import random
 from flatland.graph import Graph
 
 
-class GridWorld:
+class Gridworld:
     def __init__(self, size, coverage, start, terminal):
         self.__coverage = coverage
         self.size = size
@@ -75,6 +75,7 @@ class GridWorld:
                     south_neighbor = self.grid[(i+1,j)]
                     east_neighbor = self.grid[(i,j+1)]
 
+                    # Flatten Coordinates to use with Graph.bfs() function
                     flattened_coords = int(np.ravel_multi_index([[i],[j]],(self.size,self.size)))
                     north_flattened_coords = int(np.ravel_multi_index([[i-1],[j]],(self.size,self.size)))
                     west_flattened_coords = int(np.ravel_multi_index([[i],[j-1]],(self.size,self.size)))
@@ -166,15 +167,19 @@ class GridWorld:
 
 if __name__ == '__main__':
     size = 128
-    start = (1,1)
-    start_flattened = int(np.ravel_multi_index([[1],[1]],(size,size)))
-    terminal = (size-10,size-10)
-    terminal_flattened = int(np.ravel_multi_index([[size-5],[size-5]],(size,size)))
-    world = GridWorld(size=size, coverage=0.1, start=start, terminal=terminal)
+    start = (1, 1)
+    start_flattened = int(np.ravel_multi_index([[1], [1]], (size, size)))
+    goal = (size-10, size-10)
+    goal_flattened = int(np.ravel_multi_index([[size-5], [size-5]], (size, size)))
+
+    # Initialize Gridworld
+    world = Gridworld(size=size, coverage=0.2, start=start, terminal=goal)
     world.add_obstacles()
     world.create_state_transition_graph()
     world.draw_grid()
-    print(f'start_flattened: {start_flattened}')
-    print(f'terminal_flattened: {terminal_flattened}')
-    path = world.state_transition_graph.bfs(start_flattened, terminal_flattened)
-    print(len(path))
+
+    # Path Planning
+    bfs_path = world.state_transition_graph.bfs(start_flattened, goal_flattened)
+    print(f'BFS Path Length: {len(bfs_path)}')
+    dfs_path = world.state_transition_graph.dfs_paths(start_flattened, goal_flattened)
+    print(f'DFS Path Length: {len(dfs_path)}')
