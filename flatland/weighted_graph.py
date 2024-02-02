@@ -1,3 +1,9 @@
+'''
+Title: Implementing Dijkstra’s Algorithm in Python
+Author: Alexey Klochay
+Date: 10/12/2021
+Availability: https://www.udacity.com/blog/2021/10/implementing-dijkstras-algorithm-in-python.html
+'''
 from collections import defaultdict
 import sys
 

@@ -18,9 +18,6 @@ class MotionPlanner:
 
         print(f'Start Node: {self.start_flattened}, {self.start}')
         print(f'Goal Node: {self.goal_flattened}, {self.goal}')
-        # self.world.create_graph()
-        # self.world.create_weighted_graph()
-        # self.world.draw_grid()
 
     def bfs_planner(self):
         return self.world.graph.bfs(self.start_flattened, self.goal_flattened)
@@ -32,6 +29,9 @@ class MotionPlanner:
         return self.world.weighted_graph.dijkstra(self.start_flattened)
 
     def random_planner(self):
+        pass
+
+    def draw_path(self):
         pass
 
 

@@ -1,6 +1,8 @@
-# Code from geeksforgeeks.org
-# https://www.geeksforgeeks.org/breadth-first-search-or-bfs-for-a-graph/?ref=lbp
-# https://www.geeksforgeeks.org/depth-first-search-or-dfs-for-a-graph/?ref=lbp
+'''
+Titles: ['Breadth First Search or BFS for a Graph','Depth First Search or DFS for a Graph']
+Authors: ['Geeks for Geeks','Geeks for Geeks']
+Availability: ['https://www.geeksforgeeks.org/breadth-first-search-or-bfs-for-a-graph/','https://www.geeksforgeeks.org/depth-first-search-or-dfs-for-a-graph/']
+'''
 from collections import defaultdict
 
 
