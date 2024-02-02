@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 from flatland.graph import Graph
+from flatland.weighted_graph import WeightedGraph
 
 
 class Gridworld:
@@ -12,8 +13,11 @@ class Gridworld:
         self.__terminal = terminal
         self.__grid = np.zeros(shape=(size, size), dtype=int)
         self.__num_obstacle = 0
-        self.__state_transition_graph = Graph()
+        self.__graph = Graph()
+        self.__weighted_graph = WeightedGraph()
         self.draw_border()
+        self.create_graph()
+        self.create_weighted_graph()
 
     # GETTERS
     @property
@@ -37,8 +41,12 @@ class Gridworld:
         return self.__terminal
 
     @property
-    def state_transition_graph(self):
-        return self.__state_transition_graph
+    def graph(self):
+        return self.__graph
+
+    @property
+    def weighted_graph(self):
+        return self.__weighted_graph
 
     # SETTERS
     @grid.setter
@@ -65,7 +73,7 @@ class Gridworld:
             self.update_cell((i,0),1)
             self.update_cell((i,self.grid.shape[1]-1),1)
 
-    def create_state_transition_graph(self):
+    def create_graph(self):
         for i in range(1, self.size-1):
             for j in range(1, self.size-1):
                 if self.grid[(i,j)] == 0:
@@ -83,13 +91,39 @@ class Gridworld:
                     east_flattened_coords = int(np.ravel_multi_index([[i],[j+1]],(self.size,self.size)))
 
                     if north_neighbor == 0:
-                        self.state_transition_graph.addEdge(flattened_coords,north_flattened_coords)
+                        self.graph.add_edge(flattened_coords,north_flattened_coords)
                     if west_neighbor == 0:
-                        self.state_transition_graph.addEdge(flattened_coords,west_flattened_coords)
+                        self.graph.add_edge(flattened_coords,west_flattened_coords)
                     if south_neighbor == 0:
-                        self.state_transition_graph.addEdge(flattened_coords,south_flattened_coords)
+                        self.graph.add_edge(flattened_coords,south_flattened_coords)
                     if east_neighbor == 0:
-                        self.state_transition_graph.addEdge(flattened_coords,east_flattened_coords)
+                        self.graph.add_edge(flattened_coords,east_flattened_coords)
+
+    def create_weighted_graph(self):
+        for i in range(1, self.size - 1):
+            for j in range(1, self.size - 1):
+                if self.grid[(i, j)] == 0:
+                    # go through all neighbors and check if 0, if so, addEdge()
+                    north_neighbor = self.grid[(i - 1, j)]
+                    west_neighbor = self.grid[(i, j - 1)]
+                    south_neighbor = self.grid[(i + 1, j)]
+                    east_neighbor = self.grid[(i, j + 1)]
+
+                    # Flatten Coordinates to use with Graph.bfs() function
+                    flattened_coords = int(np.ravel_multi_index([[i], [j]], (self.size, self.size)))
+                    north_flattened_coords = int(np.ravel_multi_index([[i - 1], [j]], (self.size, self.size)))
+                    west_flattened_coords = int(np.ravel_multi_index([[i], [j - 1]], (self.size, self.size)))
+                    south_flattened_coords = int(np.ravel_multi_index([[i + 1], [j]], (self.size, self.size)))
+                    east_flattened_coords = int(np.ravel_multi_index([[i], [j + 1]], (self.size, self.size)))
+
+                    if north_neighbor == 0:
+                        self.weighted_graph.add_edge(flattened_coords, north_flattened_coords, 1)
+                    if west_neighbor == 0:
+                        self.weighted_graph.add_edge(flattened_coords, west_flattened_coords, 1)
+                    if south_neighbor == 0:
+                        self.weighted_graph.add_edge(flattened_coords, south_flattened_coords, 1)
+                    if east_neighbor == 0:
+                        self.weighted_graph.add_edge(flattened_coords, east_flattened_coords, 1)
 
     def add_obstacles(self):
         # TODO: make sure tetrominos don't overlap
@@ -160,26 +194,9 @@ class Gridworld:
         plt.title(f'{self.size}x{self.size} Gridworld, Obstacle Coverage is {self.coverage*100}%\n {self.size*self.size} cells, {4*(self.num_obstacle // 4)} obstacle cells')
         plt.show()
 
-    def draw_path(self,flattened_path):
+    def draw_path(self, flattened_path):
         # add path to a copy of grid, then plot
         pass
 
-
-if __name__ == '__main__':
-    size = 128
-    start = (1, 1)
-    start_flattened = int(np.ravel_multi_index([[1], [1]], (size, size)))
-    goal = (size-10, size-10)
-    goal_flattened = int(np.ravel_multi_index([[size-5], [size-5]], (size, size)))
-
-    # Initialize Gridworld
-    world = Gridworld(size=size, coverage=0.2, start=start, terminal=goal)
-    world.add_obstacles()
-    world.create_state_transition_graph()
-    world.draw_grid()
-
-    # Path Planning
-    bfs_path = world.state_transition_graph.bfs(start_flattened, goal_flattened)
-    print(f'BFS Path Length: {len(bfs_path)}')
-    dfs_path = world.state_transition_graph.dfs_paths(start_flattened, goal_flattened)
-    print(f'DFS Path Length: {len(dfs_path)}')
+    def take_step(self):
+        pass
