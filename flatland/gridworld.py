@@ -1,11 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import colors as c
 import random
 from flatland.graph import Graph
 from flatland.weighted_graph import WeightedGraph
 
 
 class Gridworld:
+    # TODO: combine create_graph() and create_weighted_graph() into one function
     def __init__(self, size, coverage, start, terminal):
         self.__coverage = coverage
         self.size = size
@@ -16,6 +18,7 @@ class Gridworld:
         self.__graph = Graph()
         self.__weighted_graph = WeightedGraph()
         self.draw_border()
+        self.add_obstacles()
         self.create_graph()
         self.create_weighted_graph()
 
@@ -76,19 +79,19 @@ class Gridworld:
     def create_graph(self):
         for i in range(1, self.size-1):
             for j in range(1, self.size-1):
-                if self.grid[(i,j)] == 0:
-                    # go through all neighbors and check if 0, if so, addEdge()
-                    north_neighbor = self.grid[(i-1,j)]
-                    west_neighbor = self.grid[(i,j-1)]
-                    south_neighbor = self.grid[(i+1,j)]
-                    east_neighbor = self.grid[(i,j+1)]
+                if self.grid[(i, j)] == 0:
+                    # go through all neighbors and check if 0, if so, add_edge()
+                    north_neighbor = self.grid[(i-1, j)]
+                    west_neighbor = self.grid[(i, j-1)]
+                    south_neighbor = self.grid[(i+1, j)]
+                    east_neighbor = self.grid[(i, j+1)]
 
-                    # Flatten Coordinates to use with Graph.bfs() function
-                    flattened_coords = int(np.ravel_multi_index([[i],[j]],(self.size,self.size)))
-                    north_flattened_coords = int(np.ravel_multi_index([[i-1],[j]],(self.size,self.size)))
-                    west_flattened_coords = int(np.ravel_multi_index([[i],[j-1]],(self.size,self.size)))
-                    south_flattened_coords = int(np.ravel_multi_index([[i+1],[j]],(self.size,self.size)))
-                    east_flattened_coords = int(np.ravel_multi_index([[i],[j+1]],(self.size,self.size)))
+                    # Flatten Coordinates to use with Graph.bfs() and Graph.dfs() functions
+                    flattened_coords = int(np.ravel_multi_index([[i], [j]], (self.size, self.size)))
+                    north_flattened_coords = int(np.ravel_multi_index([[i-1], [j]], (self.size, self.size)))
+                    west_flattened_coords = int(np.ravel_multi_index([[i], [j-1]], (self.size, self.size)))
+                    south_flattened_coords = int(np.ravel_multi_index([[i+1], [j]], (self.size, self.size)))
+                    east_flattened_coords = int(np.ravel_multi_index([[i], [j+1]], (self.size, self.size)))
 
                     if north_neighbor == 0:
                         self.graph.add_edge(flattened_coords,north_flattened_coords)
@@ -184,19 +187,30 @@ class Gridworld:
             self.update_cell(location=cell_3, value=1)
             self.update_cell(location=cell_4, value=1)
 
-    def draw_grid(self):
-        fig, ax = plt.subplots()
-        plt.pcolormesh(self.grid)
-        ax.set_aspect('equal')
+    def draw_grid(self, path=None, title=''):
+        fig, axs = plt.subplots()
+        path_grid = self.grid
+        colors = []
+
+        # If no path given, print only grid
+        # else convert flattened path coordinates to 2D coordinates and display
+        if path is not None:
+            colors = ['w', 'k', 'b']
+            path_2d = np.unravel_index(path, (self.size, self.size), order='C')
+            for idx, i in enumerate(path_2d[0]):
+                j = path_2d[1][idx]
+                coord = (i, j)
+                path_grid[coord] = 2
+        else:
+            colors = ['w', 'k']
+
+        # Color Mesh used to display a grid
+        cmap = c.ListedColormap(colors)
+        plt.pcolormesh(path_grid, cmap=cmap)
+
+        axs.set_aspect('equal')
         plt.xticks([])
         plt.yticks([])
         plt.gca().invert_yaxis()
-        plt.title(f'{self.size}x{self.size} Gridworld, Obstacle Coverage is {self.coverage*100}%\n {self.size*self.size} cells, {4*(self.num_obstacle // 4)} obstacle cells')
+        plt.title(f'{self.size}x{self.size} Gridworld, Obstacle Coverage is {self.coverage*100}%\n {self.size*self.size} cells, {4*(self.num_obstacle // 4)} obstacle cells \n {title}')
         plt.show()
-
-    def draw_path(self, flattened_path):
-        # add path to a copy of grid, then plot
-        pass
-
-    def take_step(self):
-        pass
