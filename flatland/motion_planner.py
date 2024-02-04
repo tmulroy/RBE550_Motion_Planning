@@ -6,7 +6,7 @@ from flatland.weighted_graph import WeightedGraph
 
 class MotionPlanner:
     def __init__(self):
-        self.size = 16
+        self.size = 32
         self.start = (1, 1)
         self.start_flattened = int(np.ravel_multi_index([[1], [1]], (self.size, self.size)))
         self.goal = (self.size - 1, self.size - 1)
@@ -40,10 +40,13 @@ class MotionPlanner:
     def draw_path(self, path, title):
         '''
         Draws path in Gridworld
-        :param path: list of flattened coordinates
+        :param paths: list of lists, flattened coordinates
         :param title: string of plot title
         '''
         self.world.draw_grid(path=path, title=title)
+
+    def draw_grid(self):
+        pass
 
 
 if __name__ == '__main__':

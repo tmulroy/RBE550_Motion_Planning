@@ -188,21 +188,26 @@ class Gridworld:
             self.update_cell(location=cell_4, value=1)
 
     def draw_grid(self, path=None, title=''):
+        # TODO: for each coord in path, add to path_grid, call plt.show(). Add waiting period.
         fig, axs = plt.subplots()
         path_grid = self.grid
         colors = []
-
+        path_2d = ()
         # If no path given, print only grid
         # else convert flattened path coordinates to 2D coordinates and display
         if path is not None:
-            colors = ['w', 'k', 'b']
+            colors = ['w', 'k', 'r']
+
+            # Convert flattened corr
             path_2d = np.unravel_index(path, (self.size, self.size), order='C')
+
             for idx, i in enumerate(path_2d[0]):
                 j = path_2d[1][idx]
                 coord = (i, j)
                 path_grid[coord] = 2
         else:
             colors = ['w', 'k']
+
 
         # Color Mesh used to display a grid
         cmap = c.ListedColormap(colors)
@@ -212,5 +217,10 @@ class Gridworld:
         plt.xticks([])
         plt.yticks([])
         plt.gca().invert_yaxis()
-        plt.title(f'{self.size}x{self.size} Gridworld, Obstacle Coverage is {self.coverage*100}%\n {self.size*self.size} cells, {4*(self.num_obstacle // 4)} obstacle cells \n {title}')
+        plt.title(f'{self.size}x{self.size} Gridworld, Obstacle Coverage is {self.coverage*100}% \n {title}')
         plt.show()
+
+        for idx, i in enumerate(path_2d[0]):
+            j = path_2d[1][idx]
+            coord = (i, j)
+            path_grid[coord] = 0
